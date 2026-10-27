@@ -1,10 +1,14 @@
 # Guía de validación reproducible
 
-## Preparación
+## Preparación en Windows sin Docker
 
-Importa cada archivo en una instancia local de **n8n 2.44.7**. Ejecuta los workflows manuales con **Execute Workflow**. Para cada webhook, abre el nodo Webhook, pulsa **Listen for test event** y envía la solicitud a la URL de prueba mostrada por n8n (normalmente `http://localhost:5678/webhook-test/<path>`). Los siguientes comandos presuponen esa URL base y una terminal Bash con `curl`.
+1. Comprueba que Node.js y npm estén disponibles: `node --version` y `npm --version`.
+2. Desde la raíz del repositorio, ejecuta `./scripts/start_n8n_local.ps1`. Si PowerShell bloquea scripts, usa `powershell -ExecutionPolicy Bypass -File .\scripts\start_n8n_local.ps1`; el bypass solo afecta a ese proceso.
+3. Abre `http://127.0.0.1:5678` y completa la configuración inicial de n8n.
+4. Importa cada archivo de `workflows/` desde el menú **Import from File**. No actives los workflows.
+5. Ejecuta los workflows manuales con **Execute Workflow**. Para cada webhook, abre el nodo Webhook y pulsa **Listen for test event**.
 
-Los casos de esta guía describen resultados esperados; las pruebas automáticas de JavaScript no equivalen a ejecutar los workflows dentro de n8n.
+Los comandos de webhook siguientes presuponen la URL de prueba `http://127.0.0.1:5678/webhook-test/<path>` y una terminal Bash con `curl`. Adapta la URL a la que muestre tu instancia. Los casos de esta guía describen resultados esperados; las pruebas automáticas de JavaScript no equivalen a ejecutar los workflows dentro de n8n.
 
 ## Casos por workflow
 
@@ -13,7 +17,7 @@ Los casos de esta guía describen resultados esperados; las pruebas automáticas
 Ruta: `portfolio-consultas`. Esperado: HTTP 200 y salida `ok: true` con la consulta recortada.
 
 ```sh
-curl -i -X POST http://localhost:5678/webhook-test/portfolio-consultas \
+curl -i -X POST http://127.0.0.1:5678/webhook-test/portfolio-consultas \
   -H 'Content-Type: application/json' \
   -d '{"consulta":"  estado del pedido  "}'
 ```
@@ -29,7 +33,7 @@ Ejecuta manualmente. Requiere acceso a `https://jsonplaceholder.typicode.com/pos
 Ruta: `portfolio-leads`. Primer caso esperado: `valido: true`, estado `pendiente_de_contacto` y email normalizado en minúsculas.
 
 ```sh
-curl -i -X POST http://localhost:5678/webhook-test/portfolio-leads \
+curl -i -X POST http://127.0.0.1:5678/webhook-test/portfolio-leads \
   -H 'Content-Type: application/json' \
   -d '{"nombre":"Ada Ejemplo","email":"ADA@example.com","empresa":"Demo"}'
 ```
@@ -58,16 +62,16 @@ Ruta: `portfolio-secure`. Las pruebas automáticas verifican que la lógica del 
 
 ```sh
 # Esperado: HTTP 401
-curl -i -X POST http://localhost:5678/webhook-test/portfolio-secure \
+curl -i -X POST http://127.0.0.1:5678/webhook-test/portfolio-secure \
   -H 'Content-Type: application/json' -d '{"mensaje":"hola"}'
 
 # Esperado: HTTP 400
-curl -i -X POST http://localhost:5678/webhook-test/portfolio-secure \
+curl -i -X POST http://127.0.0.1:5678/webhook-test/portfolio-secure \
   -H 'Content-Type: application/json' -H 'x-api-key: CHANGE_ME_LOCAL_DEMO_KEY' \
   -d '{}'
 
 # Esperado: HTTP 200
-curl -i -X POST http://localhost:5678/webhook-test/portfolio-secure \
+curl -i -X POST http://127.0.0.1:5678/webhook-test/portfolio-secure \
   -H 'Content-Type: application/json' -H 'x-api-key: CHANGE_ME_LOCAL_DEMO_KEY' \
   -d '{"mensaje":"hola"}'
 ```
@@ -80,6 +84,7 @@ curl -i -X POST http://localhost:5678/webhook-test/portfolio-secure \
 | Referencias, nombres e IDs de nodos | CI | Comprueba unicidad y conexiones existentes |
 | Sintaxis JavaScript de nodos Code | CI | Compila con `node --check`; no ejecuta bloques |
 | Comportamiento de los ocho nodos Code | CI | Ejecuta lógica con entradas simuladas; no ejecuta el motor n8n |
+| Arranque local mediante PowerShell | Documentado | El script no se ha ejecutado en el PC del usuario |
 | CLI/importación en n8n 2.44.7 | Pendiente | Requiere una instalación local de n8n |
 | Webhooks y nodos n8n reales | Pendiente | Requiere importar y ejecutar los casos localmente |
 | Respuesta real de JSONPlaceholder | Pendiente | Requiere ejecutar el workflow con Internet |
