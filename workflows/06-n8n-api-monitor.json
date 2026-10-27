@@ -1,0 +1,80 @@
+{
+  "name": "06 - API Monitor",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "manual-trigger",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://jsonplaceholder.typicode.com/posts/1",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "comprobar-api",
+      "name": "Comprobar API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "onError": "continueRegularOutput",
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const error=$json.error ?? (!$json.id&&($json.message||$json.name||$json.status||$json.code)?($json.message??'Error en solicitud'):null); const disponible=!error&&Boolean($json.id); return {json:{servicio:'JSONPlaceholder',disponible,comprobadoEn:new Date().toISOString(),nota:error?'La solicitud falló':(disponible?'La API respondió con datos':'Respuesta inesperada'),error}};"
+      },
+      "id": "evaluar-respuesta",
+      "name": "Evaluar respuesta",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        700,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Comprobar API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Comprobar API": {
+      "main": [
+        [
+          {
+            "node": "Evaluar respuesta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "00000000-0000-4000-8000-000000000001",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}

@@ -1,0 +1,58 @@
+{
+  "name": "03 - Lead Management",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "portfolio-leads",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "webhook-lead",
+      "name": "Webhook Lead",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "portfolio-leads"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const b=$json.body ?? $json; const nombre=typeof b.nombre==='string'?b.nombre.trim():''; const email=typeof b.email==='string'?b.email.trim().toLowerCase():''; const ev=/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email); return {json:{valido:Boolean(nombre&&ev),lead:{nombre,email,empresa:typeof b.empresa==='string'?b.empresa.trim():''},estado:nombre&&ev?'pendiente_de_contacto':'requiere_correccion',errores:[!nombre?'nombre obligatorio':null,!ev?'email inválido':null].filter(Boolean)}};"
+      },
+      "id": "validar-contacto",
+      "name": "Validar contacto",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Lead": {
+      "main": [
+        [
+          {
+            "node": "Validar contacto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "00000000-0000-4000-8000-000000000001",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}

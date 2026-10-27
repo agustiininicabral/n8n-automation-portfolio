@@ -1,0 +1,52 @@
+{
+  "name": "05 - Report Automation",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "manual-trigger",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const ventas=[12000,18000,7500,22500,10000]; const total=ventas.reduce((a,b)=>a+b,0); return [{json:{cantidadVentas:ventas.length,totalVentas:total,promedio:Math.round(total/ventas.length*100)/100,minimo:Math.min(...ventas),maximo:Math.max(...ventas),generadoEn:new Date().toISOString()}}];"
+      },
+      "id": "calcular-métricas",
+      "name": "Calcular métricas",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Calcular métricas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "00000000-0000-4000-8000-000000000001",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}

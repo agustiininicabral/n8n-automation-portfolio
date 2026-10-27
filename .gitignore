@@ -1,0 +1,15 @@
+.env
+.env.*
+!.env.example
+*.log
+.n8n/
+credentials*.json
+.DS_Store
+Thumbs.db
+.vscode/
+backup-n8n-before-import/
+backup-n8n-after-import/
+workflows-pending-import/
+*.db
+*.sqlite
+*.sqlite3

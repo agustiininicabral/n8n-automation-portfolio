@@ -1,0 +1,52 @@
+{
+  "name": "07 - Notification Builder",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "manual-trigger",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const evento={tipo:'lead_recibido',nombre:'Cliente de prueba',email:'cliente@example.com'}; return {json:{...evento,asunto:`Nuevo evento: ${evento.tipo}`,mensaje:`Se recibió el evento ${evento.tipo} para ${evento.nombre}.`,destinoConfigurado:false,nota:'Configurar un proveedor para enviar realmente.'}};"
+      },
+      "id": "preparar-notificación",
+      "name": "Preparar notificación",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Preparar notificación",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "00000000-0000-4000-8000-000000000001",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}
