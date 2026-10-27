@@ -42,3 +42,9 @@ jobs:
 
       - name: Validate exported workflows
         run: python scripts/validate_workflows.py
+
+      - name: Check behavior-test harness syntax
+        run: node --check scripts/test_workflow_behavior.mjs
+
+      - name: Run deterministic Code-node behavior tests
+        run: node scripts/test_workflow_behavior.mjs
