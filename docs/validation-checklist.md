@@ -4,7 +4,7 @@
 
 Importa cada archivo en una instancia local de **n8n 2.44.7**. Ejecuta los workflows manuales con **Execute Workflow**. Para cada webhook, abre el nodo Webhook, pulsa **Listen for test event** y envía la solicitud a la URL de prueba mostrada por n8n (normalmente `http://localhost:5678/webhook-test/<path>`). Los siguientes comandos presuponen esa URL base y una terminal Bash con `curl`.
 
-Los casos de esta guía describen resultados esperados; **no se ejecutaron como workflows** durante la validación del repositorio.
+Los casos de esta guía describen resultados esperados; las pruebas automáticas de JavaScript no equivalen a ejecutar los workflows dentro de n8n.
 
 ## Casos por workflow
 
@@ -22,7 +22,7 @@ Repite con `{}`. Esperado: `ok: false` y error `El campo consulta es obligatorio
 
 ### 02 — REST API Integration
 
-Ejecuta manualmente. Requiere acceso a `https://jsonplaceholder.typicode.com/posts/1`. Esperado: un item con `fuente: "JSONPlaceholder"`, `id: 1`, `titulo` y `resumen`. No se registra como probado hasta completar la ejecución con Internet disponible.
+Ejecuta manualmente. Requiere acceso a `https://jsonplaceholder.typicode.com/posts/1`. El comportamiento de normalización se prueba con una respuesta simulada; la integración real sigue pendiente. Esperado: un item con `fuente: "JSONPlaceholder"`, `id: 1`, `titulo` y `resumen`.
 
 ### 03 — Lead Management
 
@@ -38,23 +38,23 @@ Repite con `{"nombre":"Ada Ejemplo","email":"correo-invalido"}`. Esperado: `vali
 
 ### 04 — Data Processing
 
-Ejecuta manualmente. Esperado: tres items válidos después del filtro; ningún item tiene `unidades: 0`. Los totales por producto son 50000, 36000 y 180000.
+El bloque Code calcula cuatro registros y marca como inválido el que tiene `unidades: 0`; la prueba automatizada comprueba los totales y que tres registros cumplen la condición. La ejecución real del nodo Filter sigue pendiente. Los totales válidos son 50000, 36000 y 180000.
 
 ### 05 — Report Automation
 
-Ejecuta manualmente. Esperado: `cantidadVentas: 5`, `totalVentas: 70000`, `promedio: 14000`, `minimo: 7500` y `maximo: 22500`.
+La prueba automática comprueba `cantidadVentas: 5`, `totalVentas: 70000`, `promedio: 14000`, `minimo: 7500` y `maximo: 22500` en la lógica del nodo Code. La ejecución dentro de n8n sigue pendiente.
 
 ### 06 — API Monitor
 
-Ejecuta manualmente. Si JSONPlaceholder responde con el post esperado, el resultado debe indicar `disponible: true`. Si la solicitud falla, el flujo debe continuar e indicar `disponible: false`, `nota: "La solicitud falló"` y el error informado por n8n. Requiere Internet para el caso exitoso; no se ha probado la API desde este repositorio.
+La lógica del nodo Code se prueba con respuestas simuladas de éxito y error. La integración real con JSONPlaceholder sigue pendiente. En el caso de fallo se espera `disponible: false`, `nota: "La solicitud falló"` y el error informado por n8n.
 
 ### 07 — Notification Builder
 
-Ejecuta manualmente. Esperado: un item con asunto y mensaje preparados y `destinoConfigurado: false`. Este workflow no envía nada.
+La prueba automática verifica que el nodo prepare un asunto y mensaje, y devuelva `destinoConfigurado: false`. Este workflow no envía nada. La ejecución dentro de n8n sigue pendiente.
 
 ### 08 — Secure Webhook
 
-Ruta: `portfolio-secure`. El código HTTP debe ser 401 sin clave, 400 con clave correcta y mensaje vacío, y 200 con clave correcta y mensaje no vacío. El placeholder de demo es `CHANGE_ME_LOCAL_DEMO_KEY`.
+Ruta: `portfolio-secure`. Las pruebas automáticas verifican que la lógica del nodo Code indique 401 sin clave, 400 con clave correcta y mensaje vacío, y 200 con clave correcta y mensaje no vacío. También se comprueba estáticamente la configuración del nodo Respond to Webhook. Los códigos HTTP reales siguen pendientes de ejecución en n8n. El placeholder de demo es `CHANGE_ME_LOCAL_DEMO_KEY`.
 
 ```sh
 # Esperado: HTTP 401
@@ -76,11 +76,12 @@ curl -i -X POST http://localhost:5678/webhook-test/portfolio-secure \
 
 | Validación | Resultado | Alcance |
 | --- | --- | --- |
-| Parseo JSON de los ocho workflows | Aprobado en CI | `scripts/validate_workflows.py`; no comprueba importación en n8n |
-| Referencias y nombres/IDs de nodos | Aprobado en CI | Nombres e IDs únicos, conexiones válidas y sin referencias a credenciales |
-| Sintaxis de los bloques JavaScript | Aprobado en CI | `node --check` compila el código; no ejecuta los bloques |
-| CLI/importación en n8n 2.44.7 | Pendiente | No hay CLI n8n disponible en el entorno |
-| Casos manuales y webhooks de esta guía | Pendiente | Requieren una instancia n8n local |
+| Parseo JSON de los ocho workflows | CI | No comprueba importación en n8n |
+| Referencias, nombres e IDs de nodos | CI | Comprueba unicidad y conexiones existentes |
+| Sintaxis JavaScript de nodos Code | CI | Compila con `node --check`; no ejecuta bloques |
+| Comportamiento de los ocho nodos Code | CI | Ejecuta lógica con entradas simuladas; no ejecuta el motor n8n |
+| CLI/importación en n8n 2.44.7 | Pendiente | Requiere una instalación local de n8n |
+| Webhooks y nodos n8n reales | Pendiente | Requiere importar y ejecutar los casos localmente |
 | Respuesta real de JSONPlaceholder | Pendiente | Requiere ejecutar el workflow con Internet |
 
-Marca como realizada una prueba de n8n solo después de ejecutar el caso correspondiente y comparar su resultado con lo esperado.
+Marca como realizada una prueba de n8n solo después de ejecutar el caso correspondiente en una instancia local y comparar su resultado con lo esperado.
