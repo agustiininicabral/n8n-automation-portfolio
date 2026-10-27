@@ -76,9 +76,9 @@ curl -i -X POST http://localhost:5678/webhook-test/portfolio-secure \
 
 | Validación | Resultado | Alcance |
 | --- | --- | --- |
-| Parseo JSON de los ocho workflows | Aprobado | Validación local; no comprueba importación en n8n |
-| Referencias y nombres/IDs de nodos | Aprobado | Sin conexiones colgantes ni duplicados |
-| Sintaxis de los bloques JavaScript | Aprobado | Compilación sintáctica; los bloques no se ejecutaron |
+| Parseo JSON de los ocho workflows | Aprobado en CI | `scripts/validate_workflows.py`; no comprueba importación en n8n |
+| Referencias y nombres/IDs de nodos | Aprobado en CI | Nombres e IDs únicos, conexiones válidas y sin referencias a credenciales |
+| Sintaxis de los bloques JavaScript | Aprobado en CI | `node --check` compila el código; no ejecuta los bloques |
 | CLI/importación en n8n 2.44.7 | Pendiente | No hay CLI n8n disponible en el entorno |
 | Casos manuales y webhooks de esta guía | Pendiente | Requieren una instancia n8n local |
 | Respuesta real de JSONPlaceholder | Pendiente | Requiere ejecutar el workflow con Internet |
