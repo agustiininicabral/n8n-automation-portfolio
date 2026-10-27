@@ -28,4 +28,8 @@ Las pruebas con Webhook usan la URL de prueba de tu instancia, habitualmente `ht
 
 El workflow 08 contiene `CHANGE_ME_LOCAL_DEMO_KEY` como placeholder para una prueba local. No lo uses como secreto real ni expongas el webhook de prueba a Internet. Los workflows son ejemplos educativos, no sistemas listos para producción. El workflow 07 prepara texto y no envía notificaciones. JSONPlaceholder es un servicio público y puede no estar disponible.
 
-Las casillas de las pruebas de n8n en la checklist quedan pendientes hasta que una persona ejecute esos casos en una instancia local. Las validaciones estáticas del repositorio se registran allí por separado.
+## Validación estática del repositorio
+
+GitHub Actions ejecuta `scripts/validate_workflows.py` en cada push y pull request. El script comprueba que los ocho archivos sean JSON válido, que los workflows estén inactivos, que no incluyan referencias a credenciales, que los nombres e IDs de nodos sean únicos, que las conexiones apunten a nodos existentes y que el JavaScript de los nodos Code compile con Node.js. También se ejecutan Ruff y `pip check`.
+
+Estas comprobaciones no importan ni ejecutan workflows dentro de n8n. Las casillas de las pruebas manuales en la checklist permanecen pendientes hasta que alguien importe y ejecute cada caso en una instancia local.
