@@ -13,3 +13,4 @@ workflows-pending-import/
 *.db
 *.sqlite
 *.sqlite3
+.ruff_cache/
