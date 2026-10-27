@@ -98,9 +98,13 @@ def validate_workflow(path: Path) -> list[str]:
 
     for source_name, outputs_by_type in connections.items():
         if source_name not in node_names:
-            errors.append(f"{path.name}: connection source {source_name!r} does not exist")
+            errors.append(
+                f"{path.name}: connection source {source_name!r} does not exist"
+            )
         if not isinstance(outputs_by_type, dict):
-            errors.append(f"{path.name}: connections for {source_name!r} must be an object")
+            errors.append(
+                f"{path.name}: connections for {source_name!r} must be an object"
+            )
             continue
 
         for output_groups in outputs_by_type.values():
@@ -113,7 +117,9 @@ def validate_workflow(path: Path) -> list[str]:
                     continue
                 for connection in group:
                     if not isinstance(connection, dict):
-                        errors.append(f"{path.name}: connection entry must be an object")
+                        errors.append(
+                            f"{path.name}: connection entry must be an object"
+                        )
                         continue
                     target_name = connection.get("node")
                     if target_name not in node_names:
@@ -130,11 +136,7 @@ def main() -> int:
         print("No workflow JSON files found.", file=sys.stderr)
         return 1
 
-    errors = [
-        error
-        for path in workflow_paths
-        for error in validate_workflow(path)
-    ]
+    errors = [error for path in workflow_paths for error in validate_workflow(path)]
     if errors:
         print("\n".join(f"ERROR: {error}" for error in errors), file=sys.stderr)
         return 1
